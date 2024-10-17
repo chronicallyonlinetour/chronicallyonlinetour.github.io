@@ -2,7 +2,7 @@ const originalImagePositions = [
     { x: 10, y: 105, width: 80, height: 150, rotationAngle: 15, used: false, hover: false },
     { x: 370, y: 129, width: 84, height: 136, rotationAngle: -2, used: false, hover: false },
     { x: 40, y: 295, width: 80, height: 140, rotationAngle: 5, used: false, hover: false },
-    { x: 350, y: 310, width: 85, height: 170, rotationAngle: 2, used: false, hover: false },
+    { x: 350, y: 310, width: 85, height: 174, rotationAngle: 2, used: false, hover: false },
 ];
 let customImagePositions = JSON.parse(JSON.stringify(originalImagePositions));
 let UPLOAD_BUTTON_SIZE = 50;
