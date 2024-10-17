@@ -1,122 +1,151 @@
-const customImagePositions = [
-    { x: 10, y: 105, width: 80, height: 150, rotationAngle: 15, used: false },
-    { x: 370, y: 129, width: 84, height: 136, rotationAngle: -2, used: false },
-    { x: 40, y: 295, width: 80, height: 140, rotationAngle: 5, used: false },
-    { x: 350, y: 310, width: 80, height: 170, rotationAngle: 5, used: false },
+const originalImagePositions = [
+    { x: 10, y: 105, width: 80, height: 150, rotationAngle: 15, used: false, hover: false },
+    { x: 370, y: 129, width: 84, height: 136, rotationAngle: -2, used: false, hover: false },
+    { x: 40, y: 295, width: 80, height: 140, rotationAngle: 5, used: false, hover: false },
+    { x: 350, y: 310, width: 80, height: 170, rotationAngle: 2, used: false, hover: false },
 ];
-const UPLOAD_BUTTON_SIZE = 50;
+let customImagePositions = JSON.parse(JSON.stringify(originalImagePositions));
+let UPLOAD_BUTTON_SIZE = 50;
 
 var canvas = null;
 var ctx = null;
 var CURRENT_REGION_INDEX = -1;
+let canvasWidth = 500;
+let canvasHeight = 500;
+let scale = 1;
 
 function main() {
-    canvas = document.getElementById('canvas');
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+    adjustCanvasSize();
 
-    canvas.onclick = (ev) => {
-        let coords = getCursorPosition(canvas, ev);
+    canvas.onclick = (ev) => {
+        let coords = getCursorPosition(canvas, ev);
+        for (let i = 0; i < customImagePositions.length; i++) {
+            let pos = customImagePositions[i];
+            if (coords.x > pos.x && coords.x <= pos.x + pos.width && coords.y > pos.y && coords.y <= pos.y + pos.height) {
+                CURRENT_REGION_INDEX = i;
+                inp.click();
+            }
+        }
+    };
 
-        for (let customRegionIndex = 0; customRegionIndex < customImagePositions.length; customRegionIndex++) {
-            let pos = customImagePositions[customRegionIndex];
+    canvas.onmousemove = (ev) => {
+        let coords = getCursorPosition(canvas, ev);
+        for (let i = 0; i < customImagePositions.length; i++) {
+            let pos = customImagePositions[i];
+            if (pos.used) continue;
 
-            if (coords.x > pos.x && coords.x <= pos.x + pos.width &&
-                coords.y > pos.y && coords.y <= pos.y + pos.height
-            ) {
-                CURRENT_REGION_INDEX = customRegionIndex;
-                inp.click();
-            }
-        }
-    }
-    canvas.onmousemove = (ev) => {
-        let coords = getCursorPosition(canvas, ev);
+            if (coords.x > pos.x && coords.x <= pos.x + pos.width && coords.y > pos.y && coords.y <= pos.y + pos.height) {
+                pos.hover = true;
+            } else {
+                pos.hover = false;
+            }
+        }
 
-        for (let customRegionIndex = 0; customRegionIndex < customImagePositions.length; customRegionIndex++) {
-            let pos = customImagePositions[customRegionIndex];
-            if (pos.used) continue;
+        drawCanvas();
+    };
 
-            if (coords.x > pos.x && coords.x <= pos.x + pos.width &&
-                coords.y > pos.y && coords.y <= pos.y + pos.height
-            ) {
-                ctx.drawImage(uploadIconSrcLight, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, 50, 50);
-            } else {
-                ctx.drawImage(uploadIconSrcDark, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, 50, 50);
-            }
-        }
-    };
-
-    ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
-
-    for (let customRegionIndex = 0; customRegionIndex < customImagePositions.length; customRegionIndex++) {
-        let pos = customImagePositions[customRegionIndex];
-        ctx.drawImage(uploadIconSrcDark, pos.x - (50 - pos.width) / 2, pos.y - (50 - pos.height) / 2, 50, 50);
-    }
-
-    for (let i of customImagePositions) {
-        // ctx.fillStyle = "rgba(255,0,0,0.4)";
-        // ctx.fillRect(i.x, i.y, i.width, i.height);
-    }
+    drawCanvas();
 }
+
+function adjustCanvasSize() {
+    const MAX_SCALE = 1.25;
+    var scale = Math.min(window.innerWidth / canvasWidth, window.innerHeight / canvasHeight);
+    scale = Math.min(MAX_SCALE, Math.max(scale, 1));
+    if (scale > MAX_SCALE) scale = MAX_SCALE;
+
+    canvas.width = canvasWidth * scale;
+    canvas.height = canvasHeight * scale;
+
+    UPLOAD_BUTTON_SIZE = scale * 50;
+
+    for (let i = 0; i < originalImagePositions.length; i++) {
+        let origPos = originalImagePositions[i];
+        customImagePositions[i].x = origPos.x * scale;
+        customImagePositions[i].y = origPos.y * scale;
+        customImagePositions[i].width = origPos.width * scale;
+        customImagePositions[i].height = origPos.height * scale;
+    }
+
+    drawCanvas();
+}
+
+function drawCanvas() {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
+
+    for (let pos of customImagePositions) {
+        if (pos.used) continue;
+
+        ctx.drawImage(pos.hover ? uploadIconSrcLight : uploadIconSrcDark, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, UPLOAD_BUTTON_SIZE, UPLOAD_BUTTON_SIZE);
+    }
+}
+
+window.addEventListener('resize', () => {
+    adjustCanvasSize();
+    drawCanvas();
+    reset();
+});
 
 var inp = document.createElement('input');
 inp.type = 'file';
 inp.accept = 'image/*';
 inp.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        customImagePositions[CURRENT_REGION_INDEX].used = true;
-        const img = new Image();
-        const reader = new FileReader();
+    const file = event.target.files[0];
+    if (file) {
+        customImagePositions[CURRENT_REGION_INDEX].used = true;
+        const img = new Image();
+        const reader = new FileReader();
 
-        reader.onload = function (event) {
-            img.src = event.target.result;
+        reader.onload = function (event) {
+            img.src = event.target.result;
 
-            img.onload = function () {
-                let CURRENT_REGION = customImagePositions[CURRENT_REGION_INDEX];
-                ctx.clearRect(CURRENT_REGION.x, CURRENT_REGION.y, CURRENT_REGION.width, CURRENT_REGION.height);
-                ctx.save();
-                ctx.translate(CURRENT_REGION.x + CURRENT_REGION.width / 2, CURRENT_REGION.y + CURRENT_REGION.height / 2);
-                ctx.rotate(CURRENT_REGION.rotationAngle * Math.PI / 180);
-                ctx.drawImage(img, -CURRENT_REGION.width / 2, -CURRENT_REGION.height / 2, CURRENT_REGION.width, CURRENT_REGION.height);
-                ctx.restore();
-                ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
-            };
-        };
+            img.onload = function () {
+                let CURRENT_REGION = customImagePositions[CURRENT_REGION_INDEX];
+                ctx.clearRect(CURRENT_REGION.x, CURRENT_REGION.y, CURRENT_REGION.width, CURRENT_REGION.height);
+                ctx.save();
+                ctx.translate(CURRENT_REGION.x + CURRENT_REGION.width / 2, CURRENT_REGION.y + CURRENT_REGION.height / 2);
+                ctx.rotate(CURRENT_REGION.rotationAngle * Math.PI / 180);
+                ctx.drawImage(img, -CURRENT_REGION.width / 2, -CURRENT_REGION.height / 2, CURRENT_REGION.width, CURRENT_REGION.height);
+                ctx.restore();
+                ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
+            };
+        };
 
-        reader.readAsDataURL(file);
-    }
+        reader.readAsDataURL(file);
+    }
 });
 
 function getCursorPosition(canvas, event) {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
 
-    return { x, y };
+    return { x: x * scale, y: y * scale };
 }
 
 function download() {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = 'chronically-online.png';
-    link.click();
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'chronically-online.png';
+    link.click();
 }
 function reset() {
-    for (var pos of customImagePositions) {
-        pos.used = false;
-    }
+    for (var pos of customImagePositions) {
+        pos.used = false;
+    }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mainSrc, 0, 0, canvas.width, canvas.height);
 
-    for (let customRegionIndex = 0; customRegionIndex < customImagePositions.length; customRegionIndex++) {
-        let pos = customImagePositions[customRegionIndex];
-        ctx.drawImage(uploadIconSrcDark, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, UPLOAD_BUTTON_SIZE, UPLOAD_BUTTON_SIZE);
-    }
+    for (let customRegionIndex = 0; customRegionIndex < customImagePositions.length; customRegionIndex++) {
+        let pos = customImagePositions[customRegionIndex];
+        ctx.drawImage(pos.hover ? uploadIconSrcLight : uploadIconSrcDark, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, UPLOAD_BUTTON_SIZE, UPLOAD_BUTTON_SIZE);
+    }
 }
 
 var mainSrc = new Image();
@@ -124,12 +153,11 @@ var uploadIconSrcLight = new Image();
 var uploadIconSrcDark = new Image();
 uploadIconSrcLight.src = './res/upload-icon-light.png';
 uploadIconSrcLight.onload = () => {
-
-    uploadIconSrcDark.src = './res/upload-icon-dark.png';
-    uploadIconSrcDark.onload = () => {
-        mainSrc.src = './res/main-no-content.png';
-        mainSrc.onload = () => {
-            main();
-        };
-    };
+    uploadIconSrcDark.src = './res/upload-icon-dark.png';
+    uploadIconSrcDark.onload = () => {
+        mainSrc.src = './res/main-no-content.png';
+        mainSrc.onload = () => {
+            main();
+        };
+    };
 };
