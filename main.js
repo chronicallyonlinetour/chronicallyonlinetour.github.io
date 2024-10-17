@@ -2,7 +2,7 @@ const originalImagePositions = [
     { x: 10, y: 105, width: 80, height: 150, rotationAngle: 15, used: false, hover: false },
     { x: 370, y: 129, width: 84, height: 136, rotationAngle: -2, used: false, hover: false },
     { x: 40, y: 295, width: 80, height: 140, rotationAngle: 5, used: false, hover: false },
-    { x: 350, y: 310, width: 80, height: 170, rotationAngle: 2, used: false, hover: false },
+    { x: 350, y: 310, width: 85, height: 170, rotationAngle: 2, used: false, hover: false },
 ];
 let customImagePositions = JSON.parse(JSON.stringify(originalImagePositions));
 let UPLOAD_BUTTON_SIZE = 50;
@@ -43,7 +43,11 @@ function main() {
             }
         }
 
-        drawCanvas();
+        for (let pos of customImagePositions) {
+            if (pos.used) continue;
+
+            ctx.drawImage(pos.hover ? uploadIconSrcLight : uploadIconSrcDark, pos.x - (UPLOAD_BUTTON_SIZE - pos.width) / 2, pos.y - (UPLOAD_BUTTON_SIZE - pos.height) / 2, UPLOAD_BUTTON_SIZE, UPLOAD_BUTTON_SIZE);
+        }
     };
 
     drawCanvas();
@@ -129,12 +133,13 @@ function getCursorPosition(canvas, event) {
 function download() {
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'chronically-online.png';
+    link.download = 'chronically-online-tour.png';
     link.click();
 }
 function reset() {
     for (var pos of customImagePositions) {
         pos.used = false;
+        pos.hover = false;
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
