@@ -21,25 +21,56 @@ function main() {
 
     canvas.onclick = (ev) => {
         let coords = getCursorPosition(canvas, ev);
-        for (let i = 0; i < customImagePositions.length; i++) {
-            let pos = customImagePositions[i];
-            if (coords.x > pos.x && coords.x <= pos.x + pos.width && coords.y > pos.y && coords.y <= pos.y + pos.height) {
-                CURRENT_REGION_INDEX = i;
-                inp.click();
+        if (coords.x < canvas.width / 2) {
+            if (coords.y < canvas.height / 2) {
+                CURRENT_REGION_INDEX = 0;
+            } else {
+                CURRENT_REGION_INDEX = 2;
             }
         }
+        if (coords.x > canvas.width / 2) {
+            if (coords.y < canvas.height / 2) {
+                CURRENT_REGION_INDEX = 1;
+            } else {
+                CURRENT_REGION_INDEX = 3;
+            }
+        }
+
+        inp.click();
     };
 
     canvas.onmousemove = (ev) => {
         let coords = getCursorPosition(canvas, ev);
-        for (let i = 0; i < customImagePositions.length; i++) {
-            let pos = customImagePositions[i];
-            if (pos.used) continue;
+        console.log(coords);
 
-            if (coords.x > pos.x && coords.x <= pos.x + pos.width && coords.y > pos.y && coords.y <= pos.y + pos.height) {
-                pos.hover = true;
+        for (let i = 0; i < customImagePositions.length; i++) {
+            customImagePositions[i].hover = false;
+        }
+
+        if (coords.x < canvas.width / 2) {
+            if (coords.y < canvas.height / 2) {
+                let pos = customImagePositions[0];
+                if (!pos.used) {
+                    pos.hover = true;
+                }
             } else {
-                pos.hover = false;
+                let pos = customImagePositions[2];
+                if (!pos.used) {
+                    pos.hover = true;
+                }
+            }
+        }
+        if (coords.x > canvas.width / 2) {
+            if (coords.y < canvas.height / 2) {
+                let pos = customImagePositions[1];
+                if (!pos.used) {
+                    pos.hover = true;
+                }
+            } else {
+                let pos = customImagePositions[3];
+                if (!pos.used) {
+                    pos.hover = true;
+                }
             }
         }
 
