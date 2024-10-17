@@ -1,110 +1,40 @@
-body {
-    background-color: #d7c6f0;
-    margin: 0;
-    padding: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
 
-.container {
-    margin: auto;
-    margin-top: 20px;
-    width: fit-content;
-}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+    <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>The Chronically Online Tour</title>
+    <link rel="stylesheet" href="./res/style.css" />
+</head>
 
-.container .title {
-    font-weight: bold;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 2em;
-    margin-bottom: 10px;
-    text-align: center;
-}
+<body>
+    <div class="container">
+        <div class="title">THE CHRONICALLY ONLINE TOUR</div>
+        <canvas id="canvas" width="500" height="500"></canvas>
+        <div class="buttons">
+            <button style="width:80%" onclick="download()"><i class="fa fa-download"></i></button>
+            <button style="width:20%" onclick="reset()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div class="ticketsContainer">
+            <a class="tickets" href="https://www.x1entertainment.com/adammcintyre">BUY TICKETS NOW</a>
+        </div>
+    </div>
+    <div class="footer">
+        <a href="https://x.com/theadammcintyre"><i class="fab fa-twitter fa-2x"></i></a>&nbsp;&nbsp;<a
+            href="https://www.instagram.com/theadammcintyre"><i class="fab fa-instagram fa-2x"></i></a>&nbsp;&nbsp;<a
+            href="https://www.youtube.com/channel/UC3_7VimlsihTL9lWKnKXf_A"><i
+                class="fab fa-youtube fa-2x"></i></a>&nbsp;&nbsp;<a href="https://www.tiktok.com/@theadammcintyre"><i
+                class="fab fa-tiktok fa-2x"></i></a>
+    </div>
+    </div>
 
-canvas {
-    border: 2px dashed #000000;
-    width: 100%;
-    height: auto;
-    display: block;
-    margin-bottom: 10px;
-}
+    <script src="./main.js"></script>
+</body>
 
-.buttons {
-    display: flex;
-}
-
-.buttons button {
-    display: block;
-    width: 50%;
-    height: 50px;
-    margin: 2px;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 2em;
-    cursor: default;
-}
-
-.buttons button:hover {
-    cursor: pointer;
-}
-
-.buttons {
-    margin: 10px;
-}
-
-.footer {
-    display: block;
-    width: 100%;
-    text-align: center;
-    margin-top: 25px;
-}
-
-.footer a {
-    color: black;
-    font-weight: bold;
-}
-
-.footer a:hover {
-    color: #f0f0f0;
-}
-
-@media (max-width: 500px) {
-
-    canvas {
-        width: 100%;
-        height: auto;
-        border: none;
-        display: block;
-        margin-bottom: 10px;
-    }
-}
-
-.ticketsContainer {
-    width: 100%;
-    text-align: center;
-}
-
-.ticketsContainer .tickets {
-    margin-top: 40px;
-    background-color: black;
-    border-radius: 100px;
-    /* box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset, rgba(44, 187, 99, .15) 0 1px 2px, rgba(44, 187, 99, .15) 0 2px 4px, rgba(44, 187, 99, .15) 0 4px 8px, rgba(44, 187, 99, .15) 0 8px 16px, rgba(44, 187, 99, .15) 0 16px 32px; */
-    color: white;
-    cursor: pointer;
-    display: inline-block;
-    font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
-    font-weight: bold;
-    padding: 7px 20px;
-    text-align: center;
-    text-decoration: none;
-    transition: all 250ms;
-    width: 300px;
-    height: 36px;
-    border: 0;
-    font-size: 28px;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-}
-
-.ticketsContainer .tickets:hover {
-    /* box-shadow: rgba(44, 187, 99, .35) 0 -25px 18px -14px inset, rgba(44, 187, 99, .25) 0 1px 2px, rgba(44, 187, 99, .25) 0 2px 4px, rgba(44, 187, 99, .25) 0 4px 8px, rgba(44, 187, 99, .25) 0 8px 16px, rgba(44, 187, 99, .25) 0 16px 32px; */
-    transform: scale(1.05) rotate(-1deg);
-}
+</html>
